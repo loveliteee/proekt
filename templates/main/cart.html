@@ -1,0 +1,181 @@
+{% extends 'main/layout.html' %}
+{% block content %}
+
+<section class="container mt-5">
+
+    <div class="container px-3 my-5 clearfix">
+        
+        <div class="card">
+            <div class="card-header">
+                <h2>Корзина</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-bordered m-0">
+                    <thead>
+                      <tr>
+                        <th class="text-center py-3 px-4" style="min-width: 400px;">Товар</th>
+                        <th class="text-right py-3 px-4" style="width: 100px;">Цена</th>
+                        <th class="text-center py-3 px-4" style="width: 120px;">Количество</th>
+                        <th class="text-right py-3 px-4" style="width: 100px;">Итого</th>
+                        <th class="text-center align-middle py-3 px-0" style="width: 40px;"><a href="#" class="shop-tooltip float-none text-light" title="" data-original-title="Clear cart"><i class="ino ion-md-trash"></i></a></th>
+                      </tr>
+                    </thead>
+                    
+                    <tbody id="cartItems">
+                      <!-- Здесь будут отображаться товары из localStorage -->
+                    </tbody>         
+                    
+                  </table>
+                </div>
+                
+            
+                <div class="d-flex flex-wrap justify-content-between align-items-center pb-4">
+                  <div class="mt-4">
+                    <label class="text-muted font-weight-normal">Промокод</label>
+                    <input type="text" placeholder="Введите промокод" class="form-control">
+                  </div>
+                  <div class="d-flex">
+                    <div class="text-right mt-4 me-4">
+                      <label class="text-muted font-weight-normal">Скидка</label>
+                      <div class="text-large"><strong>0 тг.</strong></div>
+                    </div>
+                    <div class="text-right mt-4">
+                      <label class="text-muted font-weight-normal">Итого к оплате</label>
+                      <div class="text-large" id="overallTotal"><strong>тг</strong></div>
+                    </div>
+                  </div>
+                </div>
+            
+                <div class="float-right">
+                  <button type="button" class="btn btn-lg btn-default md-btn-flat mt-2 mr-3"><a class="button_cart" href="{% url 'categories' %}">Вернуться к покупкам</a></button>
+                  <button type="button" class="btn btn-lg btn-dark mt-2" onclick="checkout()">Оформить заказ</button>
+                </div>
+            </div>
+          </div>
+      </div>
+    
+</section>
+
+<script>
+  // JavaScript code for localStorage
+  function loadCartItems() {
+    var cartItems = document.getElementById('cartItems');
+    cartItems.innerHTML = ''; // Очищаем содержимое
+  
+    var overallTotal = 0;
+  
+    // Перебираем товары из localStorage
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+  
+      // Игнорируем служебные ключи (addedToCart)
+      if (key !== 'addedToCart') {
+        var product = JSON.parse(localStorage.getItem(key));
+        createRow(product);
+      }
+    }
+  
+    // Обновляем итоговую сумму
+    updateOverallTotal();
+  }
+  
+  // Функция для обновления общей суммы
+  function updateOverallTotal() {
+    var overallTotal = 0;
+    var totalElements = document.querySelectorAll('.total-amount');
+    totalElements.forEach(function (element) {
+      overallTotal += parseFloat(element.innerText.replace(' тг.', ''));
+    });
+    document.getElementById('overallTotal').innerText = overallTotal + ' тг.';
+  }
+  
+  // Функция для создания строки таблицы для каждого товара
+  function createRow(product) {
+    // Создаем строку для товара
+    var row = document.createElement('tr');
+  
+    // Создаем ячейки для товара
+    var productNameCell = document.createElement('td');
+    productNameCell.innerHTML = '<div class="media align-items-center"><img src="" class="d-block ui-w-40 ui-bordered mr-4" alt=""><div class="media-body"><a href="#" class="d-block text-dark">' + product.productName + '</a><small>' + product.productDescription + '</small></div></div>';
+    row.appendChild(productNameCell);
+  
+    var priceCell = document.createElement('td');
+    priceCell.className = 'text-right font-weight-semibold align-middle p-4';
+    priceCell.innerText = product.productPrice + ' тг.';
+    row.appendChild(priceCell);
+  
+    var quantityCell = document.createElement('td');
+    quantityCell.className = 'align-middle p-4';
+  
+    var quantityInput = document.createElement('input');
+    quantityInput.type = 'text';
+    quantityInput.className = 'form-control text-center';
+    quantityInput.value = product.quantity;
+  
+    // Добавляем слушатель события input
+    quantityInput.addEventListener('input', function (event) {
+      // Обновляем значение product.quantity на основе введенного значения
+      product.quantity = parseInt(event.target.value) || 0;
+      updateTotal(); // Обновляем итоговую стоимость при изменении количества
+      saveToLocalStorage(); // Сохраняем изменения в localStorage
+    });
+  
+    function saveToLocalStorage() {
+      localStorage.setItem(product.productName, JSON.stringify(product));
+    }
+  
+    quantityCell.appendChild(quantityInput);
+    row.appendChild(quantityCell);
+  
+    var totalCell = document.createElement('td');
+    totalCell.className = 'text-right font-weight-semibold align-middle p-4 total-amount';
+    var totalAmount = product.quantity * product.productPrice;
+    totalCell.innerText = totalAmount + ' тг.';
+    row.appendChild(totalCell);
+  
+    // Функция для обновления итоговой стоимости
+    function updateTotal() {
+      totalAmount = product.quantity * product.productPrice;
+      totalCell.innerText = totalAmount + ' тг.';
+      updateOverallTotal(); // Обновляем общую сумму
+    }
+  
+    var removeCell = document.createElement('td');
+    removeCell.className = 'text-center align-middle px-0';
+    var removeLink = document.createElement('a');
+    removeLink.href = '#';
+    removeLink.className = 'shop-tooltip close float-none text-danger';
+    removeLink.title = 'Remove';
+    removeLink.innerText = '×';
+    removeLink.addEventListener('click', function (event) {
+      // Удаляем товар из localStorage и обновляем отображение
+      var rowToRemove = event.target.closest('tr');
+      var productNameToRemove = rowToRemove.querySelector('td:first-child a').innerText;
+      localStorage.removeItem(productNameToRemove);
+      loadCartItems();
+    });
+    removeCell.appendChild(removeLink);
+    row.appendChild(removeCell);
+  
+    // Добавляем строку в таблицу
+    cartItems.appendChild(row);
+  }
+  
+  // Загружаем товары при загрузке страницы
+  window.onload = function () {
+    loadCartItems();
+  };
+  
+  // Функция для оформления заказа и очистки корзины
+  function checkout() {
+    alert('Заказ оформлен! Спасибо за покупку.');
+    // Дополнительные действия при оформлении заказа (например, отправка на сервер)
+    
+    // Очищаем корзину
+    localStorage.clear();
+    loadCartItems(); // Обновляем отображение корзины
+  }
+</script>
+
+{% endblock %}

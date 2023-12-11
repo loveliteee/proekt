@@ -1,0 +1,93 @@
+{% extends 'main/layout.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+        </div>
+        <div class="col-md-6">
+            <h1>{{ product.name }}</h1>
+            
+            <p><strong>Цена: </strong>{{ product.price }} тг.</p>
+            <p><strong>Категория: </strong>{{ product.category }}</p>
+            <p><strong>Количество товара на складе: </strong>{{ product.quantity }}</p>
+            {% if product.features.all %}
+                <p><strong>Характеристики: </strong>
+                    <p>
+                        <ul>
+                            {% for feature in product.features.all %}
+                                <li>
+                                    {{ feature.name }}
+                                    {% if feature.value %} : {{ feature.value }}{% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </p>
+                </p>
+            {% endif %}
+            <p>Описание: {{ product.description }}</p>
+            <div class="mt-3">
+                <a href="{% url 'home' %}" class="btn btn-secondary">Назад</a>
+                <button id="addToCartBtn" class="btn btn-dark" onclick="addToCart('{{ product.name }}', '{{ product.description }}', {{ product.price }}, 1)">Добавить в корзину</button>
+                <!--id="addToCartBtn" для button-->
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // JavaScript code for localStorage
+    function addToCart(productName, productDescription, productPrice, quantity) {
+        //делать кнопку не активной по id
+        var addToCartBtn = document.getElementById('addToCartBtn');
+        // Генерируем уникальный ключ для товара
+        var key = productName.replace(/\s/g, ''); // Убираем пробелы и используем как ключ
+
+        // Проверяем, был ли товар добавлен ранее
+        if (!localStorage.getItem(key)) {
+            // Создаем объект для товара
+            var product = {
+                productName: productName,
+                productDescription: productDescription,
+                productPrice: productPrice,
+                quantity: quantity
+            };
+
+            // Сохраняем товар в localStorage
+            localStorage.setItem(key, JSON.stringify(product));
+
+            // Добавляем ключ товара в список добавленных в корзину
+            var addedToCart = localStorage.getItem('addedToCart') || '';
+            addedToCart += key + ',';
+            localStorage.setItem('addedToCart', addedToCart);
+
+            // После добавления в корзину перезагружаем товары
+            loadCartItems();
+
+            addToCartBtn.disabled = true;
+
+            alert('Товар успешно добавлен в корзину!');
+            
+        }
+    }
+
+    // Функция для загрузки товаров в корзине
+    function loadCartItems() {
+        // Реализуйте логику загрузки товаров в корзине
+        console.log('Корзина обновлена');
+    }
+
+    // Функция для оформления заказа
+    function checkout() {
+        alert('Заказ оформлен! Спасибо за покупку.');
+        // Дополнительные действия при оформлении заказа (например, отправка на сервер)
+    }
+
+    
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2Xof8d56D5CqR5F9C5a4hEJ2cHdJAw"> </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-d7H/M9/w9PiBE81aC8Vnv0yXP+P2ZZUKi6QJo3FDfZnQTfP1A2TCfW9SuAwM0wJl"></script>
+{% endblock %}

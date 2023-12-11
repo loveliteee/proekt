@@ -1,0 +1,21 @@
+{% extends 'main/layout.html' %}
+
+{% block content %}
+    <section class="container mt-5 mb-5">
+        <div>
+            {% if form.errors %}
+                {{form.errors}}
+            {% endif %}
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="text" class="form-control" name="name" placeholder="name">
+                <input type="text" class="form-control" name="price" placeholder="price">
+                <input type="text" class="form-control" name="quantity" placeholder="quantity">
+                <input type="text" class="form-control" name="vendor_code" placeholder="vendor_code">
+                <input type="text" class="form-control" name="description" placeholder="description">
+                <input type="file" name="image">
+                <input type="submit" class="btn btn-success" value="Добавить">
+            </form>
+        </div>
+    </section>
+{% endblock %}

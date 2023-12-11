@@ -1,0 +1,39 @@
+{% extends 'main/layout.html' %}
+{% block content %}
+
+<div class="container px-3 my-5 clearfix">
+    <div class="card">
+        <div class="card-header">
+            <h2>Заказы</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered m-0">
+                  <thead>
+                    <tr>
+                      <th class="text-center py-3 px-4" style="width: 50px;">Номер заказа</th>
+                      <th class="text-center py-3 px-4" style="width: 50px;">Дата</th>
+                      <th class="text-center py-3 px-4" style="width: 50px;">Статус</th>
+                      <th class="text-center py-3 px-4" style="width: 200px;">Товары</th>
+                      <th class="text-center py-3 px-4" style="width: 100px;">Сумма</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+          
+                    <tr>
+                      <td class="text-center font-weight-semibold align-middle p-4"><a href="#">25.10.2023</a></td>  
+                      <td class="text-center font-weight-semibold align-middle p-4">25.10.2023</td>
+                      <td class="text-center font-weight-semibold align-middle p-4">Мы сделаем(дай бог)</td>
+                      <td class="text-center font-weight-semibold align-middle p-4"><a href="#">Там то, то и это</a></td>
+                      <td class="text-center font-weight-semibold align-middle p-4">300 тг.</td>
+                    </tr>
+          
+                    
+          
+                  </tbody>
+                </table>
+              </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
